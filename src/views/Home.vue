@@ -1,7 +1,7 @@
 <template>
   <div class="container" :style="resize">
     <div class="header">
-      <p class="title">圣越产业园</p>
+      <p class="title">圣越32产业园</p>
     </div>
     <div class="main">
       <div class="main-left"></div>
