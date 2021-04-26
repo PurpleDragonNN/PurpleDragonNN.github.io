@@ -45,6 +45,8 @@ export default {
     border-top: 1px solid rgba(0, 193, 249, .8);
     img{
       flex: none;
+      width: 16px;
+      height: 31px;
     }
     .box-title{
       padding: 0 10px;
@@ -59,6 +61,8 @@ export default {
   .box-main{
     flex: 1;
     width: 100%;
+    height: 100%;
+    overflow: hidden;
     background: rgba(1,1,1,.2);
   }
   .bg-border{

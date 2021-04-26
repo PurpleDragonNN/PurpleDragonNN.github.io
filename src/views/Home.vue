@@ -26,7 +26,47 @@
           </template>
         </bordeBox>
       </div>
-      <div class="main-middle"></div>
+      <div class="main-middle">
+        <bordeBox class="influencers">
+          <template #boxTitle>
+            Influencers Spread Path
+          </template>
+          <template #boxMain>
+            <div class="main">
+              <div class="left-side">
+                <img src="../assets/img/circle-list.png" alt="">
+              </div>
+              <div class="right-side">
+                <div class="table-head">
+                  <div class="rank">Rank</div>
+                  <div class="kol">KOL</div>
+                  <div class="fans">Fans</div>
+                  <div class="index">KOL Index</div>
+                </div>
+                <div class="table-body" ref="tableBody">
+                  <vue-seamless-scroll :data="rankList" class="seamless-warp" :class-option="scollOptions">
+                    <ul class="item">
+                      <div class="th" ref="tableTh" v-for="(item, index) in rankList" :key="index">
+                        <div class="rank">{{index+1}}</div>
+                        <div class="kol">
+                          <img :src="item.headImg" alt="">
+                          {{item.kol}}
+                        </div>
+                        <div class="fans">
+                          {{item.fans}}
+                        </div>
+                        <div class="index">
+                          {{item.kolIndex}}
+                        </div>
+                      </div>
+                    </ul>
+                  </vue-seamless-scroll>
+                </div>
+              </div>
+            </div>
+          </template>
+        </bordeBox>
+      </div>
       <div class="main-right">
         <bordeBox class="word-cloud">
           <template #boxTitle>
@@ -44,6 +84,33 @@
             />
           </template>
         </bordeBox>
+        <bordeBox class="social-quotes">
+          <template #boxTitle>
+            Social Quotes
+          </template>
+          <template #boxMain>
+            <div class="main">
+              <div class="news-item" v-for="(item, index) in newsList" :key="index" @click="goPage(item)">
+                <div class="left-side">
+                  <div class="index">{{index+1}}</div>
+                </div>
+                <div class="right-side">
+                  <p class="title">
+                    {{item.desc.slice(0,20)}}
+                    <img src="../assets/img/Shape.png" alt="">
+                    <span class="hot-text">{{item.hot}}</span>
+                  </p>
+                  <p class="subtitle">
+                    09:00 财经网站
+                  </p>
+                  <p class="desc">
+                    {{item.desc.slice(0,80)}}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </template>
+        </bordeBox>
       </div>
     </div>
   </div>
@@ -54,6 +121,8 @@ import bordeBox from '@/components/bordeBox.vue'
 import WordCloudChart from '@/components/WordCloudChart'
 import 'echarts-liquidfill/src/liquidFill.js'
 import dayjs from 'dayjs'
+import { rankList, echarts05Data } from '@/assets/js/data'
+import newsList from '@/assets/js/news.json'
 const wordSize = [15000,10081,9386,7500,7500,6500,6500,6000,4500,3800,3000,2500,2300,2000,1900,1800]
 export default {
   name: 'Home',
@@ -70,107 +139,12 @@ export default {
       nowTime: '',
       activeVideo: '',
       isShowVideoDialog: false,
-      echarts05Data: [
-        {
-          name: "吴亦凡",
-          /*textStyle: {
-            color: '#00eaff'
-          },*/
-          value: 15000
-        },
-        {
-          name: "B站",
-          value: 10081
-        },
-        {
-          name: "微博",
-          value: 9386
-        },
-        {
-          name: "汽车之家",
-          value: 7500
-        },
-        {
-          name: "旭子工作室",
-          value: 7500
-        },
-        {
-          name: "抖音",
-          value: 6500
-        },
-        {
-          name: "老司机出品",
-          value: 6500
-        },
-        {
-          name: "懂车帝",
-          value: 6000
-        },
-        {
-          name: "合肥庐阳保时捷中心",
-          value: 4500
-        },
-        {
-          name: "老司机汽车",
-          value: 3800
-        },
-        {
-          name: "萝卜报告",
-          value: 3000
-        },
-        {
-          name: "易车网",
-          value: 2500
-        },
-        {
-          name: "韩路",
-          value: 2300
-        },
-        {
-          name: "ranta",
-          value: 2000
-        },
-        {
-          name: "萝卜报告",
-          value: 1900
-        },
-        {
-          name: "现代化经济体系",
-          value: 1800
-        },
-        /*{
-          name: "国防动员",
-          value: 1700
-        },
-        {
-          name: "信息化战争",
-          value: 1600
-        },
-        {
-          name: "局部战争",
-          value: 1500
-        },
-        {
-          name: "教育",
-          value: 1200
-        },
-        {
-          name: "职业教育",
-          value: 1100
-        },
-        {
-          name: "兵法",
-          value: 900
-        },
-        {
-          name: "一国两制",
-          value: 800
-        },
-        {
-          name: "特点社会主义思想",
-          value: 700
-        },*/
-      ]
+      echarts05Data: echarts05Data,
+      rankList: rankList,
+      scollOptions:{
+        step: 1
+      },
+      newsList: newsList
     }
   },
   mounted () {
@@ -180,12 +154,15 @@ export default {
     this.currentNumber()
 
     this.shuffle()
-    /*setInterval(() => {
+    setInterval(() => {
       this.loop()
-    },5000)*/
+    },5000)
     this.loop()
   },
   methods: {
+    goPage(item){
+      window.open(item.url)
+    },
     loop () {
       let randomArr = wordSize.shuffle()
       this.echarts05Data.forEach((item, index, arr) => {
@@ -201,7 +178,7 @@ export default {
       let randomArr = [], randomDate = []
       for (let i = 0; i < 20; i++) {
         randomArr.push(Math.round(Math.random() * 1000000))
-        randomDate.push(dayjs().format('YYYY.MM.DD HH:mm:ss'))
+        randomDate.push(dayjs().subtract(4*i, 'h').format('YYYY.MM.DD HH:mm:ss'))
       }
       let option = {
         tooltip: {
@@ -404,7 +381,7 @@ export default {
           flex-wrap: wrap;
           justify-content: center;
           width: 100%;
-          height: 400px;
+          height: 450px;
           .current-number-chart{
             width: 50%;
             height: 50%;
@@ -413,12 +390,114 @@ export default {
       }
     }
     &-middle{
+      display: flex;
+      flex-direction: column-reverse;
       margin: 0 10px;
-      flex: 1.5;
+      flex: 1.6;
+      .influencers{
+        width: 100%;
+        height: 496px;
+        color: #fff;
+        .main{
+          width: 100%;
+          height: 100%;
+          .left-side{
+            padding: 10px;
+            img{
+              animation:transparency 4s linear infinite;
+              @keyframes transparency {
+                0%{
+                  opacity: 1;
+                }
+                20%{
+                  opacity: .8;
+                }
+                35%{
+                  opacity: .6;
+                }
+                50%{
+                  opacity: .3;
+                }
+                65%{
+                  opacity: .5;
+                }
+                80%{
+                  opacity: .8;
+                }
+                100%{
+                  opacity: 1;
+                }
+              }
+            }
+          }
+          .right-side{
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            .table-head{
+              display: flex;
+              color: #00aeff;
+              flex: none;
+              height: 50px;
+              align-items: center;
+              background: rgba(2,58,160,.28);
+              &>div{
+                flex: 1;
+              }
+              .kol{
+                flex: 2;
+              }
+              .index{
+                flex: 1.3;
+              }
+            }
+            .table-body{
+              display: flex;
+              flex-direction: column;
+              text-align: left;
+              flex: 1;
+              overflow: hidden;
+              .th{
+                display: flex;
+                text-align: left;
+                height: 50px;
+                flex: none;
+                align-items: center;
+                &:nth-child(2n){
+                  background: rgba(2,58,160,.28);
+                }
+                .rank{
+                  color: #00aeff;
+                  width: 40px;
+                  text-align: center;
+                }
+                .kol{
+                  display: flex;
+                  align-items: center;
+                  flex: 1.8;
+                  font-size: 14px;
+                  img{
+                    margin-right: 10px;
+                  }
+                }
+                .fans{
+                  flex: 1;
+                }
+                .index{
+                  flex: 1;
+                  color: #16dffe;
+                }
+              }
+            }
+          }
+        }
+      }
     }
     &-right{
       flex: 1;
       .word-cloud{
+        margin-bottom: 20px;
+        height: 434px;
         .search-bar{
           display: flex;
           align-items: center;
@@ -439,6 +518,71 @@ export default {
             background: #007eff;
             cursor: pointer;
             color: #fff;
+          }
+        }
+      }
+
+      .social-quotes{
+        width: 100%;
+        height: 488px;
+        .main{
+          display: flex;
+          flex-direction: column;
+          padding: 10px 20px;
+          width: 100%;
+          box-sizing: border-box;
+          height: 100%;
+          overflow: auto;
+          .news-item{
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 193, 249, 0.3);
+            cursor: pointer;
+            .left-side{
+              display: flex;
+              justify-content: center;
+              flex: none;
+              width: 40px;
+              color: #fff;
+              box-sizing: border-box;
+              .index{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 14px;
+                height: 26px;
+                width: 26px;
+                background: url("../assets/img/Rectangle.png") no-repeat;
+              }
+            }
+            .right-side{
+              display: flex;
+              flex-direction: column;
+              .title{
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                color: #008aff;
+                img{
+                  margin: 0 10px;
+                }
+                .hot-text{
+                  color: #ca2434;
+                }
+              }
+              .subtitle{
+                margin-bottom: 8px;
+                font-size: 14px;
+                color: rgba(255,255,255,.4);
+              }
+              .desc{
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
+                overflow: hidden;
+                color: rgba(255,255,255,.8);
+              }
+            }
           }
         }
       }
