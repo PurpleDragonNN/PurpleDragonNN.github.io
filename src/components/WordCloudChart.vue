@@ -5,6 +5,7 @@
 <script>
 import "echarts-wordcloud/dist/echarts-wordcloud";
 import "echarts-wordcloud/dist/echarts-wordcloud.min";
+const wordSize = [15000,10081,9386,7500,7500,6500,6500,6000,4500,3800,3000,2500,2300,2000,1900,1800]
 
 export default {
   props: {
@@ -39,7 +40,9 @@ export default {
     };
   },
   mounted() {
+    this.shuffle()
     this.initChart();
+
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -104,7 +107,32 @@ export default {
         ]
       };
       this.chart.setOption(option);
-    }
+      setInterval(() => {
+        let randomArr = wordSize.shuffle()
+        this.data.forEach((item, index, arr) => {
+          arr[index].value = randomArr[index]
+        })
+        if (this.$refs.wordCloudChart) {
+          this.$refs.wordCloudChart.initChart()
+        }
+        this.chart.setOption(option);
+      },4000)
+    },
+    // 数组打乱顺序方法
+    shuffle (){
+      Array.prototype.shuffle = function() {
+        var array = this;
+        var m = array.length,
+            t, i;
+        while (m) {
+          i = Math.floor(Math.random() * m--);
+          t = array[m];
+          array[m] = array[i];
+          array[i] = t;
+        }
+        return array;
+      }
+    },
   }
 };
 </script>

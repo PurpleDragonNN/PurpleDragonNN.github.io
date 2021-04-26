@@ -123,7 +123,6 @@ import 'echarts-liquidfill/src/liquidFill.js'
 import dayjs from 'dayjs'
 import { rankList, echarts05Data } from '@/assets/js/data'
 import newsList from '@/assets/js/news.json'
-const wordSize = [15000,10081,9386,7500,7500,6500,6500,6000,4500,3800,3000,2500,2300,2000,1900,1800]
 export default {
   name: 'Home',
   components: {
@@ -152,26 +151,11 @@ export default {
     window.onresize = this.resizeFn
 
     this.currentNumber()
-
-    this.shuffle()
-    setInterval(() => {
-      this.loop()
-    },5000)
-    this.loop()
+    this.buzzLineChart()
   },
   methods: {
     goPage(item){
       window.open(item.url)
-    },
-    loop () {
-      let randomArr = wordSize.shuffle()
-      this.echarts05Data.forEach((item, index, arr) => {
-        arr[index].value = randomArr[index]
-      })
-      if (this.$refs.wordCloudChart) {
-        this.$refs.wordCloudChart.initChart()
-      }
-      this.buzzLineChart()
     },
     buzzLineChart () {
       let buzzLine = this.$echarts.init(this.$refs.buzzLine);
@@ -180,6 +164,7 @@ export default {
         randomArr.push(Math.round(Math.random() * 1000000))
         randomDate.push(dayjs().subtract(4*i, 'h').format('YYYY.MM.DD HH:mm:ss'))
       }
+
       let option = {
         tooltip: {
           trigger: 'axis',
@@ -240,6 +225,14 @@ export default {
         }]
       }
       buzzLine.setOption(option);
+      setInterval(() => {
+        let randomArr = []
+        for (let i = 0; i < 20; i++) {
+          randomArr.push(Math.round(Math.random() * 1000000))
+        }
+        option.series[0].data = randomArr
+        buzzLine.setOption(option);
+      },4000)
     },
     currentNumber () {
       let currentNumber0 = this.$echarts.init(this.$refs.currentNumber0);
@@ -249,14 +242,17 @@ export default {
         {
           color: '#0073e8',
           title: 'Buzz',
+          value: 30
         },
         {
           color: '#a45efa',
           title: 'Coverage',
+          value: 50
         },
         {
           color: '#00c1f9',
           title: 'Sentiment NSR',
+          value: 60
         },
       ]
       let option = (item) => ({
@@ -320,30 +316,24 @@ export default {
             color: item.color
           },
           data: [{
-            value: 30,
+            value: item.value,
             name: item.title
           }]
         }]
       })
+      setInterval(function () {
+        setting.forEach(item => {
+          item.value = ~~(Math.random() * 100)
+        })
+        currentNumber0.setOption(option(setting[0]));
+        currentNumber1.setOption(option(setting[1]));
+        currentNumber2.setOption(option(setting[2]));
+      }, 4000);
       currentNumber0.setOption(option(setting[0]));
       currentNumber1.setOption(option(setting[1]));
       currentNumber2.setOption(option(setting[2]));
     },
-    // 数组打乱顺序方法
-    shuffle (){
-      Array.prototype.shuffle = function() {
-        var array = this;
-        var m = array.length,
-                t, i;
-        while (m) {
-          i = Math.floor(Math.random() * m--);
-          t = array[m];
-          array[m] = array[i];
-          array[i] = t;
-        }
-        return array;
-      }
-    },
+
     // 自适应
     resizeFn () {
       let win_w = document.documentElement.clientWidth ||  document.body.clientWidth
