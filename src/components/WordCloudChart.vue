@@ -22,7 +22,7 @@ export default {
     },
     height: {
       type: String,
-      default: "400px"
+      default: "300px"
     },
     data: {
       type: Array,
@@ -56,7 +56,7 @@ export default {
           text: this.title,
           x: "center"
         },
-        backgroundColor: "rgba(1,1,1,0)",
+        // backgroundColor: "rgba(1,1,1,.2)",
         // tooltip: {
         //   pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>"
         // },
