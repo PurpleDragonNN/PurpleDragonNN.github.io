@@ -3249,6 +3249,11 @@ echarts-liquidfill@^3.0.0:
   resolved "https://registry.npm.taobao.org/echarts-liquidfill/download/echarts-liquidfill-3.0.0.tgz?cache=0&sync_timestamp=1610852942434&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fecharts-liquidfill%2Fdownload%2Fecharts-liquidfill-3.0.0.tgz#1d41e6cd4016281b525f2f7b5be7879deffa821d"
   integrity sha1-HUHmzUAWKBtSXy97W+eHne/6gh0=
 
+echarts-wordcloud@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npm.taobao.org/echarts-wordcloud/download/echarts-wordcloud-2.0.0.tgz?cache=0&sync_timestamp=1610777755404&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fecharts-wordcloud%2Fdownload%2Fecharts-wordcloud-2.0.0.tgz#52ef817895801ffe9e99dd1bacab7686b2dec04a"
+  integrity sha1-Uu+BeJWAH/6emd0brKt2hrLewEo=
+
 echarts@^5.0.2:
   version "5.0.2"
   resolved "https://registry.npm.taobao.org/echarts/download/echarts-5.0.2.tgz?cache=0&sync_timestamp=1612592564808&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fecharts%2Fdownload%2Fecharts-5.0.2.tgz"
