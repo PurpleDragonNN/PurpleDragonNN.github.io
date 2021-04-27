@@ -14,7 +14,8 @@
     "echarts-liquidfill": "^3.0.0",
     "echarts-wordcloud": "^2.0.0",
     "vue": "^2.6.11",
-    "vue-router": "^3.2.0"
+    "vue-router": "^3.2.0",
+    "vue-seamless-scroll": "^1.1.23"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
