@@ -356,7 +356,7 @@ export default {
         currentNumber0.setOption(option(setting[0]));
         currentNumber1.setOption(option(setting[1]));
         currentNumber2.setOption(option(setting[2]));
-      }, 4000);
+      }, 1000);
       currentNumber0.setOption(option(setting[0]));
       currentNumber1.setOption(option(setting[1]));
       currentNumber2.setOption(option(setting[2]));
