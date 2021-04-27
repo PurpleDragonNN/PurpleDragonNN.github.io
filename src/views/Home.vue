@@ -38,18 +38,18 @@
               </div>
               <div class="right-side">
                 <div class="table-head">
-                  <div class="rank">Rank</div>
+                  <div class="rank">Platform</div>
                   <div class="kol">KOL</div>
                   <div class="fans">Fans</div>
                   <div class="index">KOL Index</div>
                 </div>
                 <div class="table-body" ref="tableBody">
-                  <vue-seamless-scroll :data="rankList" class="seamless-warp" :class-option="scollOptions">
+                  <vue-seamless-scroll :data="rankList()" class="seamless-warp" :class-option="scollOptions">
                     <ul class="item">
-                      <div class="th" ref="tableTh" v-for="(item, index) in rankList" :key="index">
-                        <div class="rank">{{index+1}}</div>
+                      <div class="th" ref="tableTh" v-for="(item, index) in rankList()" :key="index">
+                        <div class="rank">{{item.Platform}}</div>
                         <div class="kol">
-                          <img :src="item.headImg" alt="">
+                          <img src="../assets/img/question.png" alt="">
                           {{item.kol}}
                         </div>
                         <div class="fans">
@@ -73,15 +73,15 @@
             Topics Words Cloud
           </template>
           <template #boxMain>
-            <div class="search-bar">
+            <!--<div class="search-bar">
               <input type="text" class="search-input">
               <div class="search-btn">筛选</div>
             </div>
             <word-cloud-chart
-              ref="wordCloudChart"
               id="echarts05"
               :data="echarts05Data"
-            />
+            />-->
+            <img class="word-cloud_img" :src="wordCloudUrl" alt="">
           </template>
         </bordeBox>
         <bordeBox class="social-quotes">
@@ -96,12 +96,12 @@
                 </div>
                 <div class="right-side">
                   <p class="title">
-                    {{item.desc.slice(0,20)}}
+                    微博
                     <img src="../assets/img/Shape.png" alt="">
                     <span class="hot-text">{{item.hot}}</span>
                   </p>
                   <p class="subtitle">
-                    09:00 财经网站
+                    09:00
                   </p>
                   <p class="desc">
                     {{item.desc.slice(0,80)}}
@@ -118,15 +118,17 @@
 
 <script>
 import bordeBox from '@/components/bordeBox.vue'
-import WordCloudChart from '@/components/WordCloudChart'
+// import WordCloudChart from '@/components/WordCloudChart'
 import 'echarts-liquidfill/src/liquidFill.js'
 import dayjs from 'dayjs'
 import { rankList, echarts05Data } from '@/assets/js/data'
 import newsList from '@/assets/js/news.json'
+import buzzJson from '@/assets/js/buzz.json'
+import buzzLineJson from '@/assets/js/buzzLine.json'
 export default {
   name: 'Home',
   components: {
-    WordCloudChart,
+    // WordCloudChart,
     bordeBox
   },
   data () {
@@ -143,7 +145,8 @@ export default {
       scollOptions:{
         step: 1
       },
-      newsList: newsList
+      newsList: newsList,
+      wordCloudUrl: require('../assets/img/wordCloud/1.png')
     }
   },
   mounted () {
@@ -152,6 +155,18 @@ export default {
 
     this.currentNumber()
     this.buzzLineChart()
+    let loop = 1,urls = [
+      require('../assets/img/wordCloud/1.png'),
+      require('../assets/img/wordCloud/2.png'),
+      require('../assets/img/wordCloud/3.png'),
+      require('../assets/img/wordCloud/4.png'),
+      require('../assets/img/wordCloud/5.png'),
+    ]
+    setInterval(() => {
+      this.wordCloudUrl = urls[loop]
+      loop++
+      if (loop>4) loop = 0
+    }, 5000)
   },
   methods: {
     goPage(item){
@@ -159,19 +174,17 @@ export default {
     },
     buzzLineChart () {
       let buzzLine = this.$echarts.init(this.$refs.buzzLine);
-      let randomArr = [], randomDate = []
-      for (let i = 0; i < 20; i++) {
-        randomArr.push(Math.round(Math.random() * 1000000))
-        randomDate.push(dayjs().subtract(4*i, 'h').format('YYYY.MM.DD HH:mm:ss'))
-      }
-
-      let option = {
+      let option = (randomArr) => ({
         tooltip: {
           trigger: 'axis',
           borderColor: 'none',
-          extraCssText:'width:250px;height:120px; background: rgba(3, 56, 125, .8);white-space: pre-wrap;',
-          formatter: () => {
-            return `<p style="color: #0071d7;font-size: 16px">这是一段新闻文案标题文案</p><p style="color: #999;font-size: 12px">09:00 财经网站</p><p style="color: #fff;font-size: 14px;width: 100%">这是一段新闻推送这是一段新闻推送这是一段新闻推送这是一段新闻推送这是一段新闻推送</p>`
+          extraCssText:'width:200px;height:100px; background: rgba(3, 56, 125, .8);white-space: pre-wrap;',
+          formatter: (data) => {
+            let active = randomArr.find(item => {
+              return data[0].axisValue === item.time
+            })
+            if (!active.news) return ''
+            return `<p style="color: #0071d7;font-size: 16px">${active.title}</p><p style="color: #999;font-size: 12px">${active.time}</p><p style="color: #fff;font-size: 14px;width: 100%;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 2;overflow: hidden;">${active.news.slice(0,40)}</p>`
           }
         },
         xAxis: {
@@ -182,7 +195,7 @@ export default {
             rotate:90,
             color: '#fff'
           },
-          data: randomDate
+          data: randomArr.map(item => item.time)
         },
         yAxis: {
           type: 'value',
@@ -207,7 +220,7 @@ export default {
           top:30
         },
         series: [{
-          data: randomArr,
+          data: randomArr.map(item => item.Buzz),
           type: 'line',
           areaStyle: {},
           color: new this.$echarts.graphic.LinearGradient(
@@ -223,15 +236,16 @@ export default {
                   ]
           )
         }]
-      }
-      buzzLine.setOption(option);
+      })
+      let randomArr = buzzLineJson.slice(0,20)
+      buzzLine.setOption(option(randomArr));
+
+      let totalLine = buzzLineJson.length,loop = 0
       setInterval(() => {
-        let randomArr = []
-        for (let i = 0; i < 20; i++) {
-          randomArr.push(Math.round(Math.random() * 1000000))
-        }
-        option.series[0].data = randomArr
-        buzzLine.setOption(option);
+        randomArr = buzzLineJson.slice(loop, loop+20)
+        buzzLine.setOption(option(randomArr));
+        loop++
+        if (loop >= totalLine) loop = 0
       },4000)
     },
     currentNumber () {
@@ -242,28 +256,31 @@ export default {
         {
           color: '#0073e8',
           title: 'Buzz',
-          value: 30
+          value: buzzJson.buzz[0],
+          max: Math.max(...buzzJson.buzz)
         },
         {
           color: '#a45efa',
           title: 'Coverage',
-          value: 50
+          value: buzzJson.coverage[0],
+          max: Math.max(...buzzJson.coverage)
         },
         {
           color: '#00c1f9',
           title: 'Sentiment NSR',
-          value: 60
+          value: buzzJson.NSR[0],
+          max: Math.max(...buzzJson.NSR)
         },
       ]
       let option = (item) => ({
         series: [{
           type: 'gauge',
-          radius: '110%',
-          center: ['50%', '50%'],
+          radius: '120%',
+          center: ['50%', '55%'],
           startAngle: 220,
           endAngle: -40,
           min: 0,
-          max: 100,
+          max: item.max,
           splitNumber: 10,
           splitLine: {
             show:false
@@ -297,9 +314,14 @@ export default {
 
           axisLabel: {
             color: '#fff',
-            fontSize: 16,
-            distance: 20,
-
+            fontSize: 12,
+            distance: 16,
+            formatter: (val) => {
+              if (item.title !== 'Sentiment NSR') {
+                return (val/10000).toFixed(1)+'w'
+              }
+              return val
+            },
           },
           title: {
             offsetCenter: [0, '60%'],
@@ -311,7 +333,10 @@ export default {
             offsetCenter: [0, '30%'],
             valueAnimation: true,
             formatter: function (value) {
-              return value + '%';
+              if (item.title !== 'Sentiment NSR') {
+                return (value/10000).toFixed(2)+'w'
+              }
+              return (value/item.max*100).toFixed(2) + '%';
             },
             color: item.color
           },
@@ -321,10 +346,13 @@ export default {
           }]
         }]
       })
+      let len = buzzJson.buzz.length, i = 1
       setInterval(function () {
-        setting.forEach(item => {
-          item.value = ~~(Math.random() * 100)
+        setting.forEach((item, index) => {
+          item.value = buzzJson[Object.keys(buzzJson)[index]][i]
         })
+        i++
+        if (i >= len) i = 1
         currentNumber0.setOption(option(setting[0]));
         currentNumber1.setOption(option(setting[1]));
         currentNumber2.setOption(option(setting[2]));
@@ -431,11 +459,15 @@ export default {
               height: 50px;
               align-items: center;
               background: rgba(2,58,160,.28);
-              &>div{
-                flex: 1;
+              .rank{
+                flex: 1.3;
+                text-align: center;
               }
               .kol{
-                flex: 2;
+                flex: 1.8;
+              }
+              .fans{
+                flex: 0.8;
               }
               .index{
                 flex: 1.3;
@@ -450,15 +482,16 @@ export default {
               .th{
                 display: flex;
                 text-align: left;
-                height: 50px;
+                height: 60px;
                 flex: none;
                 align-items: center;
                 &:nth-child(2n){
                   background: rgba(2,58,160,.28);
                 }
                 .rank{
+                  padding-right: 10px;
                   color: #00aeff;
-                  width: 40px;
+                  width: 80px;
                   text-align: center;
                 }
                 .kol{
@@ -494,6 +527,7 @@ export default {
           padding: 10px 40px 0 30px;
           .search-input{
             flex: 1;
+            color: #fff;
             height: 33px;
             border-radius: 5px;
             background: rgba(4, 46, 86, .3);
@@ -509,6 +543,10 @@ export default {
             cursor: pointer;
             color: #fff;
           }
+        }
+        &_img{
+          margin: 18px auto;
+          display: block;
         }
       }
 
